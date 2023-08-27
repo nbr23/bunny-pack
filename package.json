@@ -1,0 +1,18 @@
+{
+  "name": "bunny-pack",
+  "version": "1.0.0",
+  "description": "",
+  "license": "MIT",
+  "private": true,
+  "author": {
+    "name": "nbr23"
+  },
+  "contributors": [],
+  "dependencies": {
+    "buffer": "^6.0.3",
+    "msgpackr": "^1.9.7",
+    "web-ext": "^7.6.2",
+    "webpack": "^5.88.2",
+    "webpack-cli": "^5.1.4"
+  }
+}

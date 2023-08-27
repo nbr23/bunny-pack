@@ -1,0 +1,24 @@
+{
+    "manifest_version": 3,
+    "name": "BunnyPack",
+    "version": "1.0",
+    "description": "Decode MessagePack encoded messages in RabbitMQ's web console.",
+    "author": "nbr23",
+  
+    "permissions": [
+        "activeTab",
+        "webNavigation"
+      ],
+    "browser_specific_settings": {
+      "gecko": {
+        "id": "bunny-pack@23.tf",
+        "strict_min_version": "60.0"
+      }
+    },
+    "content_scripts": [
+      {
+        "matches": ["https://*.cloudamqp.com/*"],
+        "js": ["./dist/bundle.js"]
+      }
+    ]
+  }
