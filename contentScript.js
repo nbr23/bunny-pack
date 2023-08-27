@@ -15,7 +15,7 @@ const observer = new MutationObserver((mutations) => {
 				const message = mutation.addedNodes[i].querySelector('div > table > tbody > tr:nth-child(5) > td > pre');
 				if (message) {
 					try {
-						const updatedMessage = JSON.stringify(unpack(Buffer.from(message.textContent.trim(), 'base64')));
+						const updatedMessage = JSON.stringify(unpack(Buffer.from(message.textContent.trim(), 'base64')), null, 2);
 						message.textContent = updatedMessage;
 					} catch (e) {
 						console.log(`error unpacking "${message.textContent.trim()}"`, e);
