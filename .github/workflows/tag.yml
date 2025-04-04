@@ -1,0 +1,9 @@
+name: Tag npm bumps
+
+on:
+  push:
+    branches:
+      - master
+jobs:
+  call-workflow-passing-data:
+    uses: nbr23/github-workflows/.github/workflows/tag-npm-version-bump.yml@e2eb23e5f9d9019ca3813929463759879bd6a112
