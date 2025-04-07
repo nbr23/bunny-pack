@@ -8,6 +8,16 @@ const observer = new MutationObserver((mutations) => {
 			if (mutation.target.nodeName != 'DIV') {
 				return;
 			}
+			if (mutation.target.id == 'main') {
+				const getMessageForm = mutation.target.querySelector('form[action="#/queues/get"]');
+				if (getMessageForm) {
+					const truncateField = getMessageForm.querySelector('input[name="truncate"]');
+					if (truncateField) {
+						truncateField.remove();
+					}
+				}
+				return;
+			}
 			for (let i = 0; i < mutation.addedNodes.length; i++) {
 				let parsedMsgObject = null;
 				let message = null;
