@@ -6,6 +6,6 @@ on:
       - master
 jobs:
   call-workflow-passing-data:
-    uses: nbr23/github-workflows/.github/workflows/tag-npm-version-bump.yml@75c68d04b6181384e97cb2f67c37c8cddeb6e099
+    uses: nbr23/github-workflows/.github/workflows/tag-npm-version-bump.yml@4abb57b8b1d40ad5df49c5129368e6b52740d2d6
     with:
         create_release: true
