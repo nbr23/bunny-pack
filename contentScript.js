@@ -51,7 +51,15 @@ const observer = new MutationObserver((mutations) => {
 					}
 					try {
 						const base64Msg = btoa(unescape(encodeURIComponent(JSON.stringify(parsedMsgObject, null, 2))));
-						mutation.addedNodes[i].querySelector('div > table > tbody > tr:nth-child(5) > td').insertAdjacentHTML('afterbegin', `<button class="copy-msg-btn" onclick="navigator.clipboard.writeText(decodeURIComponent(escape(atob('${base64Msg}'))))">Copy</button>`);
+						const copyButton = document.createElement('button');
+						copyButton.className = 'copy-msg-btn';
+						copyButton.textContent = 'Copy';
+						copyButton.addEventListener('click', function() {
+							navigator.clipboard.writeText(decodeURIComponent(escape(atob(`${base64Msg}`))));
+						});
+
+						const targetElement = mutation.addedNodes[i].querySelector('div > table > tbody > tr:nth-child(5) > td');
+						targetElement.prepend(copyButton);
 					} catch (e) {
 						console.log(`error adding copy button`, e);
 					}
