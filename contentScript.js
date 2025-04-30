@@ -131,8 +131,8 @@ const darkModeMappingForeground = {
 
 
 const darkModeMappingBackgroundImage = {
-	'linear-gradient(rgb(240, 240, 240) 0%, rgb(224, 224, 224) 100%)': 'linear-gradient(rgb(101, 101, 101) 0%, rgb(87, 87, 87) 100%)',
-	'linear-gradient(rgb(248, 248, 248) 0%, rgb(255, 255, 255) 100%)': 'linear-gradient(rgb(54, 54, 54) 0%, rgb(24, 24, 24) 100%)',
+	'linear-gradient(rgb(240, 240, 240) 0%, rgb(224, 224, 224) 100%)': 'linear-gradient(rgb(50, 50, 50) 0%, rgb(40, 40, 40) 100%)',
+	'linear-gradient(rgb(248, 248, 248) 0%, rgb(255, 255, 255) 100%)': 'linear-gradient(rgb(34, 34, 34) 0%, rgb(24, 24, 24) 100%)',
 };
 
 const borderColorMapping = {
