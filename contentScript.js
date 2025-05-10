@@ -110,6 +110,10 @@ const darkModeMappingBackground = {
 
 	'rgba(0, 0, 0, 0)': '#fff0f3',
 	'black': '#fff0f3',
+
+	// Chrome specific
+	'-webkit-gradient(linear, 0% 0%, 0% 100%, from(rgb(240, 240, 240)), to(rgb(224, 224, 224)))': '-webkit-gradient(linear, 0% 0%, 0% 100%, from(rgb(50, 50, 50)), to(rgb(40, 40, 40)))',
+	'-webkit-gradient(linear, 0% 0%, 0% 100%, from(rgb(248, 248, 248)), to(rgb(255, 255, 255)))': '-webkit-gradient(linear, 0% 0%, 0% 100%, from(rgb(34, 34, 34)), to(rgb(24, 24, 24)))',
 };
 
 
@@ -141,7 +145,15 @@ const borderColorMapping = {
 };
 
 async function applyDarkMode() {
-	const { darkMode } = await browser.storage.local.get('darkMode') || { darkMode: false };
+	let result = {};
+	if (typeof browser !== 'undefined') {
+		result = await browser.storage.local.get('darkMode');
+	} else if (typeof chrome !== 'undefined') {
+		result = await new Promise(resolve => chrome.storage.local.get('darkMode', resolve));
+	}
+	
+	const darkMode = result.darkMode || false;
+	
 	if (document.title !== 'RabbitMQ Management') {
 		console.log('Not on RabbitMQ Management page, skipping dark mode');
 		return;
@@ -188,6 +200,9 @@ async function applyDarkMode() {
 					}
 					if (rule.style.borderColor && Object.keys(borderColorMapping).includes(rule.style.borderColor)) {
 						rule.style.setProperty('border-color', borderColorMapping[rule.style.borderColor], 'important');
+					}
+					if (rule.style.background && Object.keys(darkModeMappingBackground).includes(rule.style.background)) {
+						rule.style.setProperty('background', darkModeMappingBackground[rule.style.background], 'important');
 					}
 					if (rule.style.backgroundImage && Object.keys(darkModeMappingBackgroundImage).includes(rule.style.backgroundImage)) {
 						rule.style.setProperty('background-image', darkModeMappingBackgroundImage[rule.style.backgroundImage], 'important');
