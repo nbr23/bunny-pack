@@ -1,11 +1,17 @@
-name: Tag npm bumps
+name: Tag npm bumps and build release artifacts
 
 on:
   push:
     branches:
       - master
+
 jobs:
-  call-workflow-passing-data:
-    uses: nbr23/github-workflows/.github/workflows/tag-npm-version-bump.yml@4abb57b8b1d40ad5df49c5129368e6b52740d2d6
+  tag-and-release:
+    uses: nbr23/github-workflows/.github/workflows/tag-npm-version-bump.yml@e1e97176734f2c8badaea5e1811231dcdd11a208
     with:
-        create_release: true
+      create_release: true
+      build_command: make all
+      release_assets: |
+        {
+          "bunny-pack-{tag}-chrome.zip": "web-ext-artifacts/*.zip"
+        }
