@@ -10,6 +10,7 @@ jobs:
     uses: nbr23/github-workflows/.github/workflows/tag-npm-version-bump.yml@e1e97176734f2c8badaea5e1811231dcdd11a208
     with:
       create_release: true
+      draft_release: true
       build_command: make all
       release_assets: |
         {
