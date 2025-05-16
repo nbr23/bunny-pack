@@ -68,10 +68,6 @@ const observer = new MutationObserver((mutations) => {
 		}
 	});
 });
-observer.observe(document.body, {
-	childList: true,
-	subtree: true,
-});
 
 const darkModeMappingBackground = {
 	'white': 'rgb(31,32,35)',
@@ -151,9 +147,9 @@ async function applyDarkMode() {
 	} else if (typeof chrome !== 'undefined') {
 		result = await new Promise(resolve => chrome.storage.local.get('darkMode', resolve));
 	}
-	
+
 	const darkMode = result.darkMode || false;
-	
+
 	if (document.title !== 'RabbitMQ Management') {
 		console.log('Not on RabbitMQ Management page, skipping dark mode');
 		return;
@@ -215,4 +211,18 @@ async function applyDarkMode() {
 	});
 }
 
-applyDarkMode();
+function bunnyPackSetup() {
+	if (document.title !== 'RabbitMQ Management') {
+		console.log('Not on RabbitMQ Management page, skipping dark mode');
+		return;
+	}
+
+	observer.observe(document.body, {
+		childList: true,
+		subtree: true,
+	});
+
+	applyDarkMode();
+}
+
+bunnyPackSetup();
