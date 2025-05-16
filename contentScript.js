@@ -1,8 +1,7 @@
 import { unpack } from 'msgpackr';
 import { Buffer } from 'buffer';
 
-
-const observer = new MutationObserver((mutations) => {
+function handleRabbitMQMessageDecoding(mutations) {
 	mutations.forEach((mutation) => {
 		if (mutation.addedNodes && mutation.addedNodes.length > 0) {
 			if (mutation.target.nodeName != 'DIV') {
@@ -67,6 +66,10 @@ const observer = new MutationObserver((mutations) => {
 			}
 		}
 	});
+}
+
+const observer = new MutationObserver((mutations) => {
+	handleRabbitMQMessageDecoding(mutations);
 });
 
 const darkModeMappingBackground = {
