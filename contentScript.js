@@ -1,7 +1,17 @@
 import { unpack } from 'msgpackr';
 import { Buffer } from 'buffer';
 
+function isQueueDetailsPage() {
+	const fragment = window.location.hash.substring(1);
+	const [path, queryString] = fragment.split('?');
+	return path.startsWith('/queues/') && path.split('/').length >= 2;
+}
+
 function handleRabbitMQMessageDecoding(mutations) {
+	if (!isQueueDetailsPage()) {
+		return;
+	}
+
 	mutations.forEach((mutation) => {
 		if (mutation.addedNodes && mutation.addedNodes.length > 0) {
 			if (mutation.target.nodeName != 'DIV') {
