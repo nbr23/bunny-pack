@@ -1,3 +1,7 @@
+<div align="center">
+  <img src="icons/icon.svg" alt="BunnyPack Logo" width="256" />
+</div>
+
 # bunny-pack
 
 A browser extension to improve the RabbitMQ web interface a little.
@@ -7,6 +11,7 @@ A browser extension to improve the RabbitMQ web interface a little.
 - MessagePack message decoding
 - Easy "Copy message" button
 - JSON message pretty formatting
+- Remove message truncating when reading from queue
 - Dark mode
 
 ## Install
