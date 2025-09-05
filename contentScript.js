@@ -39,7 +39,7 @@ function createSendToQueueForm(message, onClose) {
 	`;
 
 	const title = document.createElement('h3');
-	title.textContent = 'Send Message to Queue';
+	title.textContent = 'Copy Message to Queue';
 	title.style.marginTop = '0';
 
 	const queueLabel = document.createElement('label');
@@ -207,17 +207,23 @@ function handleRabbitMQMessageDecoding(mutations) {
 						const base64Msg = btoa(unescape(encodeURIComponent(JSON.stringify(parsedMsgObject, null, 2))));
 						const messageText = decodeURIComponent(escape(atob(`${base64Msg}`)));
 
+						const buttonContainer = document.createElement('div');
+						buttonContainer.style.cssText = `
+							display: flex;
+							gap: 10px;
+							margin-bottom: 10px;
+						`;
+
 						const copyButton = document.createElement('button');
 						copyButton.className = 'copy-msg-btn';
 						copyButton.textContent = 'Copy';
-						copyButton.style.marginRight = '10px';
 						copyButton.addEventListener('click', function () {
 							navigator.clipboard.writeText(messageText);
 						});
 
 						const sendButton = document.createElement('button');
 						sendButton.className = 'send-msg-btn';
-						sendButton.textContent = 'Send (a copy) to queue';
+						sendButton.textContent = 'Send to queue';
 						sendButton.addEventListener('click', function () {
 							const form = createSendToQueueForm(messageText, function() {
 								document.body.removeChild(form);
@@ -225,9 +231,11 @@ function handleRabbitMQMessageDecoding(mutations) {
 							document.body.appendChild(form);
 						});
 
+						buttonContainer.appendChild(copyButton);
+						buttonContainer.appendChild(sendButton);
+
 						const targetElement = mutation.addedNodes[i].querySelector('div > table > tbody > tr:nth-child(5) > td');
-						targetElement.prepend(copyButton);
-						targetElement.prepend(sendButton);
+						targetElement.prepend(buttonContainer);
 					} catch (e) {
 						console.log(`error adding buttons`, e);
 					}
