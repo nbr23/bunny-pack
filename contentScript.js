@@ -7,6 +7,151 @@ function isQueueDetailsPage() {
 	return path.startsWith('/queues/') && path.split('/').length >= 2;
 }
 
+function getCurrentVhost() {
+	const fragment = window.location.hash.substring(1);
+	const [path] = fragment.split('?');
+	const parts = path.split('/');
+	return parts[2] ? decodeURIComponent(parts[2]) : '%2F';
+}
+
+function createSendToQueueForm(message, onClose) {
+	const overlay = document.createElement('div');
+	overlay.style.cssText = `
+		position: fixed;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		background: rgba(0,0,0,0.5);
+		z-index: 10000;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	`;
+
+	const form = document.createElement('div');
+	form.style.cssText = `
+		background: white;
+		padding: 20px;
+		border-radius: 8px;
+		min-width: 300px;
+		box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+	`;
+
+	const title = document.createElement('h3');
+	title.textContent = 'Send Message to Queue';
+	title.style.marginTop = '0';
+
+	const queueLabel = document.createElement('label');
+	queueLabel.textContent = 'Queue Name:';
+	queueLabel.style.display = 'block';
+	queueLabel.style.marginBottom = '5px';
+
+	const queueInput = document.createElement('input');
+	queueInput.type = 'text';
+	queueInput.placeholder = 'Enter queue name';
+	queueInput.style.cssText = `
+		width: 100%;
+		padding: 8px;
+		margin-bottom: 15px;
+		border: 1px solid #ccc;
+		border-radius: 4px;
+		box-sizing: border-box;
+	`;
+
+	const buttonContainer = document.createElement('div');
+	buttonContainer.style.cssText = `
+		display: flex;
+		gap: 10px;
+		justify-content: flex-end;
+	`;
+
+	const sendButton = document.createElement('button');
+	sendButton.textContent = 'Send';
+	sendButton.style.cssText = `
+		padding: 8px 16px;
+		background: #007cba;
+		color: white;
+		border: none;
+		border-radius: 4px;
+		cursor: pointer;
+	`;
+
+	const cancelButton = document.createElement('button');
+	cancelButton.textContent = 'Cancel';
+	cancelButton.style.cssText = `
+		padding: 8px 16px;
+		background: #6c757d;
+		color: white;
+		border: none;
+		border-radius: 4px;
+		cursor: pointer;
+	`;
+
+	sendButton.addEventListener('click', async () => {
+		const queueName = queueInput.value.trim();
+		if (!queueName) {
+			alert('Please enter a queue name');
+			return;
+		}
+
+		try {
+			const currentVhost = getCurrentVhost();
+			const credentials = localStorage.getItem('rabbitmq.credentials');
+			const response = await fetch(`/api/exchanges/${encodeURIComponent(currentVhost)}/amq.default/publish`, {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'Authorization': `Basic ${credentials}`,
+				},
+				body: JSON.stringify({
+					vhost: currentVhost,
+					name: 'amq.default',
+					properties: {
+						delivery_mode: 2,
+						headers: {},
+					},
+					routing_key: queueName,
+					delivery_mode: '2',
+					payload: btoa(unescape(encodeURIComponent(message))),
+					payload_encoding: 'base64',
+					headers: {},
+					props: {},
+				}),
+			});
+
+			if (response.ok) {
+				alert('Message sent successfully!');
+				onClose();
+			} else {
+				const errorText = await response.text();
+				alert(`Failed to send message: ${response.status} ${errorText}`);
+			}
+		} catch (error) {
+			alert(`Error sending message: ${error.message}`);
+		}
+	});
+
+	cancelButton.addEventListener('click', onClose);
+	overlay.addEventListener('click', (e) => {
+		if (e.target === overlay) {
+			onClose();
+		}
+	});
+
+	buttonContainer.appendChild(cancelButton);
+	buttonContainer.appendChild(sendButton);
+
+	form.appendChild(title);
+	form.appendChild(queueLabel);
+	form.appendChild(queueInput);
+	form.appendChild(buttonContainer);
+
+	overlay.appendChild(form);
+
+	return overlay;
+}
+
 function handleRabbitMQMessageDecoding(mutations) {
 	if (!isQueueDetailsPage()) {
 		return;
@@ -60,17 +205,31 @@ function handleRabbitMQMessageDecoding(mutations) {
 					}
 					try {
 						const base64Msg = btoa(unescape(encodeURIComponent(JSON.stringify(parsedMsgObject, null, 2))));
+						const messageText = decodeURIComponent(escape(atob(`${base64Msg}`)));
+
 						const copyButton = document.createElement('button');
 						copyButton.className = 'copy-msg-btn';
 						copyButton.textContent = 'Copy';
+						copyButton.style.marginRight = '10px';
 						copyButton.addEventListener('click', function () {
-							navigator.clipboard.writeText(decodeURIComponent(escape(atob(`${base64Msg}`))));
+							navigator.clipboard.writeText(messageText);
+						});
+
+						const sendButton = document.createElement('button');
+						sendButton.className = 'send-msg-btn';
+						sendButton.textContent = 'Send (a copy) to queue';
+						sendButton.addEventListener('click', function () {
+							const form = createSendToQueueForm(messageText, function() {
+								document.body.removeChild(form);
+							});
+							document.body.appendChild(form);
 						});
 
 						const targetElement = mutation.addedNodes[i].querySelector('div > table > tbody > tr:nth-child(5) > td');
 						targetElement.prepend(copyButton);
+						targetElement.prepend(sendButton);
 					} catch (e) {
-						console.log(`error adding copy button`, e);
+						console.log(`error adding buttons`, e);
 					}
 				}
 			}
