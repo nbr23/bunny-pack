@@ -3,8 +3,8 @@
       "bunny-pack@23.tf": {
         "updates": [
           {
-            "version": "2.1.2",
-            "update_link": "https://github.com/nbr23/bunny-pack/releases/download/v2.1.2/bunny-pack-2.1.2.xpi"
+            "version": "3.0.1",
+            "update_link": "https://github.com/nbr23/bunny-pack/releases/download/v3.0.1/bunny-pack-3.0.1.xpi"
           }
         ]
       }
