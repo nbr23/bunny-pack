@@ -83,6 +83,13 @@ async function createSendToQueueForm(message, onClose) {
 		color: ${darkMode ? 'rgb(195, 195, 195)' : 'black'};
 	`;
 
+	queueInput.addEventListener('keypress', (e) => {
+		if (e.key === 'Enter') {
+			e.preventDefault();
+			sendButton.click();
+		}
+	});
+
 	const buttonContainer = document.createElement('div');
 	buttonContainer.style.cssText = `
 		display: flex;
