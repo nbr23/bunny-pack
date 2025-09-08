@@ -14,6 +14,13 @@ function getCurrentVhost() {
 	return parts[2] ? decodeURIComponent(parts[2]) : '%2F';
 }
 
+function getCurrentQueueName() {
+	const fragment = window.location.hash.substring(1);
+	const [path] = fragment.split('?');
+	const parts = path.split('/');
+	return parts[3] ? decodeURIComponent(parts[3]) : '';
+}
+
 async function isDarkModeEnabled() {
 	let result = {};
 	if (typeof browser !== 'undefined') {
@@ -113,7 +120,11 @@ async function createSendToQueueForm(message, onClose) {
 
 		try {
 			const currentVhost = getCurrentVhost();
+			const currentQueue = getCurrentQueueName();
 			const credentials = localStorage.getItem('rabbitmq.credentials');
+
+			message._x_forwarded_from = currentQueue;
+
 			const response = await fetch(`/api/exchanges/${encodeURIComponent(currentVhost)}/amq.default/publish`, {
 				method: 'POST',
 				headers: {
