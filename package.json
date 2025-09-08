@@ -1,6 +1,6 @@
 {
   "name": "bunny-pack",
-  "version": "3.0.1",
+  "version": "3.0.2",
   "description": "Decode MessagePack encoded messages in RabbitMQ's web console.",
   "license": "MIT",
   "private": true,
