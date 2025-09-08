@@ -71,6 +71,7 @@ async function createSendToQueueForm(message, onClose) {
 	const queueInput = document.createElement('input');
 	queueInput.type = 'text';
 	queueInput.placeholder = 'Enter queue name';
+	queueInput.value = localStorage.getItem('bunnypack.lastSentToQueueName') || '';
 	queueInput.style.cssText = `
 		width: 100%;
 		padding: 8px;
@@ -117,6 +118,8 @@ async function createSendToQueueForm(message, onClose) {
 			alert('Please enter a queue name');
 			return;
 		}
+
+		localStorage.setItem('bunnypack.lastSentToQueueName', queueName);
 
 		try {
 			const currentVhost = getCurrentVhost();
