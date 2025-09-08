@@ -14,7 +14,19 @@ function getCurrentVhost() {
 	return parts[2] ? decodeURIComponent(parts[2]) : '%2F';
 }
 
-function createSendToQueueForm(message, onClose) {
+async function isDarkModeEnabled() {
+	let result = {};
+	if (typeof browser !== 'undefined') {
+		result = await browser.storage.local.get('darkMode');
+	} else if (typeof chrome !== 'undefined') {
+		result = await new Promise(resolve => chrome.storage.local.get('darkMode', resolve));
+	}
+	return result.darkMode || false;
+}
+
+async function createSendToQueueForm(message, onClose) {
+	const darkMode = await isDarkModeEnabled();
+
 	const overlay = document.createElement('div');
 	overlay.style.cssText = `
 		position: fixed;
@@ -31,11 +43,13 @@ function createSendToQueueForm(message, onClose) {
 
 	const form = document.createElement('div');
 	form.style.cssText = `
-		background: white;
+		background: ${darkMode ? 'rgb(31,32,35)' : 'white'};
+		color: ${darkMode ? 'rgb(195, 195, 195)' : 'black'};
 		padding: 20px;
 		border-radius: 8px;
 		min-width: 300px;
 		box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+		border: ${darkMode ? '1px solid rgb(56,58,64)' : 'none'};
 	`;
 
 	const title = document.createElement('h3');
@@ -54,9 +68,11 @@ function createSendToQueueForm(message, onClose) {
 		width: 100%;
 		padding: 8px;
 		margin-bottom: 15px;
-		border: 1px solid #ccc;
+		border: 1px solid ${darkMode ? 'rgb(56,58,64)' : '#ccc'};
 		border-radius: 4px;
 		box-sizing: border-box;
+		background-color: ${darkMode ? 'rgb(43, 43, 46)' : 'white'};
+		color: ${darkMode ? 'rgb(195, 195, 195)' : 'black'};
 	`;
 
 	const buttonContainer = document.createElement('div');
@@ -70,7 +86,7 @@ function createSendToQueueForm(message, onClose) {
 	sendButton.textContent = 'Send';
 	sendButton.style.cssText = `
 		padding: 8px 16px;
-		background: #007cba;
+		background: ${darkMode ? '#005a8b' : '#007cba'};
 		color: white;
 		border: none;
 		border-radius: 4px;
@@ -81,7 +97,7 @@ function createSendToQueueForm(message, onClose) {
 	cancelButton.textContent = 'Cancel';
 	cancelButton.style.cssText = `
 		padding: 8px 16px;
-		background: #6c757d;
+		background: ${darkMode ? '#4a5055' : '#6c757d'};
 		color: white;
 		border: none;
 		border-radius: 4px;
@@ -224,8 +240,8 @@ function handleRabbitMQMessageDecoding(mutations) {
 						const sendButton = document.createElement('button');
 						sendButton.className = 'send-msg-btn';
 						sendButton.textContent = 'Send to queue';
-						sendButton.addEventListener('click', function () {
-							const form = createSendToQueueForm(messageText, function() {
+						sendButton.addEventListener('click', async function () {
+							const form = await createSendToQueueForm(messageText, function() {
 								document.body.removeChild(form);
 							});
 							document.body.appendChild(form);
@@ -321,14 +337,7 @@ const borderColorMapping = {
 };
 
 async function applyDarkMode() {
-	let result = {};
-	if (typeof browser !== 'undefined') {
-		result = await browser.storage.local.get('darkMode');
-	} else if (typeof chrome !== 'undefined') {
-		result = await new Promise(resolve => chrome.storage.local.get('darkMode', resolve));
-	}
-
-	const darkMode = result.darkMode || false;
+	const darkMode = await isDarkModeEnabled();
 
 	if (document.title !== 'RabbitMQ Management') {
 		console.log('Not on RabbitMQ Management page, skipping dark mode');
