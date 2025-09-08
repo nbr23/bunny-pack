@@ -126,11 +126,12 @@ async function createSendToQueueForm(message, onClose) {
 					properties: {
 						delivery_mode: 2,
 						headers: {},
+						content_type: 'application/json',
 					},
 					routing_key: queueName,
 					delivery_mode: '2',
-					payload: btoa(unescape(encodeURIComponent(message))),
-					payload_encoding: 'base64',
+					payload: JSON.stringify(message),
+					payload_encoding: 'string',
 					headers: {},
 					props: {},
 				}),
@@ -241,7 +242,7 @@ function handleRabbitMQMessageDecoding(mutations) {
 						sendButton.className = 'send-msg-btn';
 						sendButton.textContent = 'Send to queue';
 						sendButton.addEventListener('click', async function () {
-							const form = await createSendToQueueForm(messageText, function() {
+							const form = await createSendToQueueForm(parsedMsgObject, function() {
 								document.body.removeChild(form);
 							});
 							document.body.appendChild(form);
