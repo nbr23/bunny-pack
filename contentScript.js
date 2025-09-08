@@ -352,11 +352,9 @@ async function applyDarkMode() {
 	const darkMode = await isDarkModeEnabled();
 
 	if (document.title !== 'RabbitMQ Management') {
-		console.log('Not on RabbitMQ Management page, skipping dark mode');
 		return;
 	}
 	if (!darkMode) {
-		console.log('Dark Bunny mode is not enabled');
 		return;
 	}
 	console.log('Dark Bunny mode is enabled');
